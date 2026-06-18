@@ -1,19 +1,45 @@
 # 🏎️ Formula 1 Race Prediction System
 
-A machine learning-based Formula 1 race prediction system built using historical race data from FastF1.
+A machine learning-based Formula 1 race prediction system that uses historical F1 race data and actual qualifying results to forecast race outcomes.
 
-The model is trained on previous Formula 1 seasons and uses qualifying performance, team strength, driver performance, and race history to predict finishing positions for upcoming races.
+The model is trained on Formula 1 seasons from 2022 to 2025 and predicts finishing positions for future races using driver performance, team performance, and qualifying position.
+
+---
+
+## Project Overview
+
+This project aims to answer a simple question:
+
+> Given the qualifying results of an upcoming Formula 1 race, who is most likely to win?
+
+The model learns patterns from historical race weekends and generates race finish predictions for future Grand Prix events.
 
 ---
 
 ## Features
 
-- Train on multiple Formula 1 seasons
-- Automatic data collection using FastF1
-- Feature engineering from race and qualifying data
-- Predict future race outcomes
-- Evaluate model performance using historical backtesting
-- Generate race winner predictions before race weekend
+- Historical F1 data collection using FastF1
+- Automated season dataset generation
+- Feature engineering for drivers and teams
+- Machine learning-based race prediction
+- Future race forecasting
+- Model validation and backtesting
+- Predicted winner and podium generation
+
+---
+
+## Training Data
+
+The model is trained using:
+
+- 2022 Formula 1 Season
+- 2023 Formula 1 Season
+- 2024 Formula 1 Season
+- 2025 Formula 1 Season
+
+Prediction target:
+
+- 2026 Formula 1 Season
 
 ---
 
@@ -36,63 +62,53 @@ f1_predictor/
 ├── forecast_validation.py
 ├── backtest.py
 │
-├── f1_model.pkl
-│
 ├── requirements.txt
 ├── README.md
+├── DOCUMENTATION.md
 └── .gitignore
 ```
 
 ---
 
-## Dataset
+## Machine Learning Pipeline
 
-The model uses historical Formula 1 race data obtained through FastF1.
-
-Training seasons:
-
-- 2022
-- 2023
-- 2024
-- 2025
-
-Prediction season:
-
-- 2026
+```text
+Historical Race Data
+          │
+          ▼
+ Feature Engineering
+          │
+          ▼
+ Training Dataset
+          │
+          ▼
+ Random Forest Model
+          │
+          ▼
+ Future Race Prediction
+```
 
 ---
 
-## Machine Learning Pipeline
+## How Race Prediction Works
 
-### Data Collection
+The model requires the actual qualifying results for the race weekend.
 
-Race results and qualifying data are collected using FastF1.
+Workflow:
 
-### Feature Engineering
+1. Obtain qualifying results after the qualifying session.
+2. Update the qualifying positions in `predict_2026.py`.
+3. Run the prediction script.
+4. The model combines:
+   - Historical driver performance
+   - Historical team performance
+   - Grid position
+   - Recent form
+5. The model predicts the expected finishing order.
 
-Features include:
+### Important
 
-- Grid Position
-- Driver Average Finish
-- Team Average Finish
-- Driver Championship Standing
-- Team Championship Standing
-- Recent Driver Form
-- Recent Team Form
-
-### Model Training
-
-The model learns relationships between:
-
-```text
-Qualifying Performance
-+
-Driver Performance
-+
-Constructor Performance
-↓
-Predicted Race Finish
-```
+Predictions cannot be generated before qualifying because qualifying position is one of the strongest predictors of race performance.
 
 ---
 
@@ -102,7 +118,6 @@ Predicted Race Finish
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/f1_predictor.git
-
 cd f1_predictor
 ```
 
@@ -118,7 +133,7 @@ Windows:
 venv\Scripts\activate
 ```
 
-Linux/Mac:
+Linux/macOS:
 
 ```bash
 source venv/bin/activate
@@ -132,84 +147,129 @@ pip install -r requirements.txt
 
 ---
 
-## How To Use
+## How To Train The Model
 
-### 1. Train Model
-
-Train using historical seasons:
+Run:
 
 ```bash
 python train_production_model.py
 ```
 
-This creates:
+The script:
+
+- Loads historical data
+- Builds the feature matrix
+- Trains the machine learning model
+- Saves the trained model
+
+Output:
 
 ```text
-f1_model.pkl
+Model saved as f1_model.pkl
 ```
 
 ---
 
-### 2. Predict Upcoming Race
+## How To Predict A Race
+
+### Step 1
+
+Open:
+
+```text
+predict_2026.py
+```
+
+### Step 2
+
+Enter the actual qualifying positions.
 
 Example:
+
+```python
+qualifying_positions = {
+    "RUS": 1,
+    "ANT": 2,
+    "LEC": 3,
+    "PIA": 4,
+    ...
+}
+```
+
+### Step 3
+
+Run:
 
 ```bash
 python predict_2026.py
 ```
 
-Output:
+The script will:
 
-```text
-Predicted Winner:
-1. Verstappen
-2. Norris
-3. Leclerc
-4. Piastri
-...
-```
-
----
-
-### 3. Backtest Model
-
-Evaluate how well the model performs on historical races.
-
-```bash
-python backtest.py
-```
-
-Example Output:
-
-```text
-Winner Accuracy: 72%
-Podium Accuracy: 64%
-Top 10 Accuracy: 58%
-```
-
----
-
-### 4. Validate Forecasts
-
-```bash
-python forecast_validation.py
-```
-
-Compares model predictions against actual race results.
+- Load historical data
+- Train the model
+- Generate race predictions
+- Display the winner prediction
+- Display the podium prediction
 
 ---
 
 ## Example Prediction
 
-Japanese Grand Prix
+### 2026 Australian Grand Prix
+
+Output:
 
 ```text
-1. Max Verstappen
-2. Lando Norris
-3. Charles Leclerc
-4. Oscar Piastri
-5. George Russell
+============================================================
+2026 AUSTRALIAN GP PREDICTION
+============================================================
+
+Driver  PredictedFinish
+
+RUS     3.47
+ANT     3.48
+LEC     5.70
+PIA     7.18
+HAD     7.24
+NOR     8.71
+VER     9.17
+LAW     9.63
+HAM    10.31
+OCO    11.57
+LIN    11.68
+HUL    12.20
+ALB    12.30
+PER    12.61
+BOR    12.89
+BEA    13.10
+GAS    13.40
+COL    14.76
+STR    14.95
+BOT    15.00
+ALO    15.20
+SAI    15.86
 ```
+
+### Predicted Winner
+
+```text
+RUS
+```
+
+### Predicted Podium
+
+```text
+1. RUS
+2. ANT
+3. LEC
+```
+
+Generated using:
+
+- Historical seasons (2022–2025)
+- Actual Australian GP qualifying positions
+- Random Forest prediction model
 
 ---
 
@@ -226,26 +286,27 @@ Japanese Grand Prix
 
 ## Future Improvements
 
+- Circuit-specific driver ratings
 - Weather-aware predictions
 - Safety car probability modelling
-- Circuit-specific driver performance
-- Tire degradation modelling
+- Tire strategy modelling
 - Monte Carlo race simulations
-- Neural network-based ranking models
+- Championship prediction system
 
 ---
 
-## Disclaimer
+## Limitations
 
-Formula 1 contains many unpredictable variables such as:
+Formula 1 races are influenced by many unpredictable factors:
 
-- Weather
 - Safety Cars
-- Mechanical Failures
-- Strategy Decisions
-- Driver Errors
+- Red Flags
+- Weather
+- Mechanical failures
+- Strategy decisions
+- Driver incidents
 
-Predictions should be considered probabilistic rather than exact outcomes.
+Predictions should therefore be treated as probabilistic forecasts rather than guaranteed results.
 
 ---
 
@@ -254,4 +315,5 @@ Predictions should be considered probabilistic rather than exact outcomes.
 Bhavesh Sahu
 
 B.Tech Electronics and Communication Engineering (ECE)
+
 The LNM Institute of Information Technology (LNMIIT)
